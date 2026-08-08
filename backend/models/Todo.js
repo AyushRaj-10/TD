@@ -4,12 +4,16 @@ const todoSchema = new mongoose.Schema(
     {
         title: {
             type: String,
-            required: true,
+            required: [true, "Title is required"],
+            trim: true,
+            maxlength: 120,
         },
 
         description: {
             type: String,
             default: "",
+            trim: true,
+            maxlength: 1000,
         },
 
         completed: {

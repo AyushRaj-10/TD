@@ -7,17 +7,22 @@ import {
     updateTodo,
     deleteTodo,
 } from "../controllers/todo.controller.js";
+import {
+    validateCreateTodo,
+    validateTodoId,
+    validateUpdateTodo,
+} from "../validators/todo.validator.js";
 
 const router = express.Router();
 
 router.get("/", getTodos);
 
-router.get("/:id", getTodo);
+router.get("/:id", validateTodoId, getTodo);
 
-router.post("/", createTodo);
+router.post("/", validateCreateTodo, createTodo);
 
-router.put("/:id", updateTodo);
+router.put("/:id", validateTodoId, validateUpdateTodo, updateTodo);
 
-router.delete("/:id", deleteTodo);
+router.delete("/:id", validateTodoId, deleteTodo);
 
 export default router;
