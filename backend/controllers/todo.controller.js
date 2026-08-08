@@ -1,65 +1,58 @@
 import Todo from "../models/Todo.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
+import { sendSuccess } from "../utils/apiResponse.js";
 
-export const getTodos = async (req, res) => {
+export const getTodos = asyncHandler(async (req, res) => {
     const todos = await Todo.find().sort({ createdAt: -1 });
 
-    res.json(todos);
-};
+    return sendSuccess(res, 200, "Todos fetched successfully", { todos });
+});
 
-export const getTodo = async (req, res) => {
-
+export const getTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.findById(req.params.id);
 
-    if (!todo)
-        return res.status(404).json({
-            message: "Todo not found"
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
+    }
 
-    res.json(todo);
+    return sendSuccess(res, 200, "Todo fetched successfully", { todo });
+});
 
-};
-
-export const createTodo = async (req, res) => {
-
+export const createTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.create({
         title: req.body.title,
-        description: req.body.description,
+        description: req.body.description ?? "",
     });
 
-    res.status(201).json(todo);
+    return sendSuccess(res, 201, "Todo created successfully", { todo });
+});
 
-};
-
-export const updateTodo = async (req, res) => {
-
+export const updateTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.findByIdAndUpdate(
         req.params.id,
-        req.body,
+        {
+            $set: req.body,
+        },
         {
             new: true,
+            runValidators: true,
         }
     );
 
-    if (!todo)
-        return res.status(404).json({
-            message: "Todo not found"
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
+    }
 
-    res.json(todo);
+    return sendSuccess(res, 200, "Todo updated successfully", { todo });
+});
 
-};
-
-export const deleteTodo = async (req, res) => {
-
+export const deleteTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.findByIdAndDelete(req.params.id);
 
-    if (!todo)
-        return res.status(404).json({
-            message: "Todo not found"
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
+    }
 
-    res.json({
-        message: "Todo deleted"
-    });
-
-};
+    return sendSuccess(res, 200, "Todo deleted successfully");
+});
