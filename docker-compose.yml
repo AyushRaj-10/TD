@@ -1,0 +1,14 @@
+services:
+  backend:
+    image: ayushraj19962004/todo-backend:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+
+  frontend:
+    image: ayushraj19962004/todo-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
